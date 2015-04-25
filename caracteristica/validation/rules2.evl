@@ -1,0 +1,40 @@
+context LPS
+{
+	constraint ElementosComNomeUnico
+	{
+		
+		guard:  self.elementos->select(x|x.isKindOf(Caracteristica))->forAll(x|x.nome<>'' and x.nome.trim()<>'')
+		
+		check:  CHECK(self.elementos->select(x|x.isKindOf(Caracteristica))->forAll(x| self.elementos->select(x|x.isKindOf(Caracteristica))->forAll(y| x<>y implies x.nome<>y.nome)))
+		//check: self.elementos->select(x|x.isKindOf(Caracteristica))->forAll(x| self.elementos->select(x|x.isKindOf(Caracteristica))->forAll(y| x<>y implies x.nome<>y.nome)) 
+		
+		message: 'Os elementos devem ter nomes únicos'
+		
+		fix
+		{
+			title: "Diferenciar nomes iguais acrescentando caracterere _#"
+			
+			do
+			{
+				
+				//TODO
+			}
+		}
+		
+	}
+}
+
+
+operation CHECK(x:Boolean):Boolean
+{		
+	var validacao := new Native('utils.FlagValidacao');
+	var b:=validacao.getFase("fase1", "");			
+	b:=b+","+x.asString();	
+	validacao.setFase("fase1",b);
+	
+	
+	var b:=validacao.getFase("chamadas", "0");			
+	b:=b.asInteger()+1;	
+	validacao.setFase("chamadas",b.asString());
+	return x;
+}
